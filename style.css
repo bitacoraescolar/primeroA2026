@@ -1,0 +1,153 @@
+/* General Reset */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+header {
+    background-color: #2c3e50; /* School Color */
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+
+/* Sections */
+section { margin-bottom: 40px; }
+h2 { color: #2c3e50; border-bottom: 3px solid #3498db; display: inline-block; margin-bottom: 20px; padding-bottom: 5px; }
+
+/* Event Grid */
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Event Card */
+.event-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-left: 5px solid #3498db; /* Default color */
+    transition: transform 0.2s;
+}
+
+.event-card:hover { transform: translateY(-5px); }
+
+.event-date { font-weight: bold; color: #7f8c8d; font-size: 0.9rem; margin-bottom: 5px; }
+.event-title { font-size: 1.25rem; margin-bottom: 10px; color: #2c3e50; }
+.event-desc { margin-bottom: 15px; font-size: 0.95rem; }
+.event-meta { font-size: 0.85rem; color: #555; background: #eee; padding: 5px 10px; border-radius: 4px; display: inline-block;}
+
+/* Specific Styles for Ongoing Events */
+#ongoing-events .event-card {
+    border-left: 5px solid #27ae60; /* Green for active */
+    background-color: #f0fff4;
+}
+
+.empty-message { font-style: italic; color: #777; }
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 { font-size: 1.8rem; }
+}
+
+/* Specific Styles for Past Events */
+#past-events .event-card {
+    border-left: 5px solid #95a5a6; /* Grey border for inactive */
+    background-color: #f9f9f9;
+    opacity: 0.7; /* Make it slightly transparent/faded */
+}
+
+/* Make it fully visible if the user hovers over it */
+#past-events .event-card:hover {
+    opacity: 1;
+    background-color: #fff;
+}
+@media (max-width: 480px) {
+    header h1 { font-size: 1.5rem; }
+    .event-card { padding: 15px; }
+    h2 { font-size: 1.2rem; }
+}
+
+.event-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    color: #34495e;
+}
+
+/* Estilo para la nueva sección de la semana */
+#week-events .event-card {
+    border-left: 5px solid #e67e22; /* Naranja para llamar la atención */
+    background-color: #fffaf5;
+}
+
+/* Hoy: Verde */
+#today-events .event-card { border-left-color: #27ae60; background-color: #f0fff4; }
+
+/* Esta semana: Naranja */
+#this-week-events .event-card { border-left-color: #e67e22; background-color: #fffaf5; }
+
+/* Próxima semana: Azul claro */
+#next-week-events .event-card { border-left-color: #3498db; }
+
+/* Futuros: Azul oscuro */
+#future-events .event-card { border-left-color: #2c3e50; }
+
+/* --- Estilos del Footer --- */
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    padding-bottom: 40px;
+}
+
+.footer-info h3, .footer-contact h4, .footer-social h4 {
+    color: #3498db;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.footer-info p, .footer-contact p {
+    font-size: 0.9rem;
+    color: #bdc3c7;
+    margin-bottom: 8px;
+}
+
+.social-links a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-right: 15px;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+    color: #3498db;
+}
+
+.footer-bottom {
+    background-color: #1a252f;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 0.8rem;
+    color: #95a5a6;
+    border-top: 1px solid #34495e;
+}

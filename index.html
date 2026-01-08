@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primero Basico</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>Colegio Don Bosco</h1>
+            <p>Mantente actualizado sobre las actividades del curso</p>
+        </div>
+    </header>
+
+<main class="container">
+    <section id="today-section">
+        <h2>🔔 Para Hoy</h2>
+        <div id="today-events" class="events-grid"></div>
+        <p id="no-today" class="empty-message" style="display:none;">No hay eventos para hoy.</p>
+    </section>
+
+    <section id="this-week-section">
+        <h2>🗓️ Esta semana</h2>
+        <div id="this-week-events" class="events-grid"></div>
+    </section>
+
+    <section id="next-week-section">
+        <h2>⏭️ Próxima semana</h2>
+        <div id="next-week-events" class="events-grid"></div>
+    </section>
+
+    <section id="future-section">
+        <h2>📅 Actividades Futuras</h2>
+        <div id="future-events" class="events-grid"></div>
+    </section>
+
+    <hr>
+
+    <section id="past-section">
+        <h2>📜 Actividades Anteriores</h2>
+        <div id="past-events" class="events-grid"></div>
+    </section>
+</main>
+
+<footer class="main-footer">
+    <div class="footer-bottom">
+        <p>&copy; 2026 - Directiva del Curso</p>
+    </div>
+</footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
