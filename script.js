@@ -1,5 +1,5 @@
 // PASTE YOUR GOOGLE SHEET CSV LINK HERE
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIf3TGrb1_ULOsUD4DdQu52yO3tAW0HLhhfvzI9iBfv8mumy0lSOo8g_HAzf5Vo8u8vRh5DvT-scE3/pub?gid=125522208&single=true&output=csv'; 
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8AfAtB-eXyuOyoQZJ48kDLOJUiE3MbaxF8XGwN5K9gQD6biT5oNFymac8vVZnBf8N9bwFTj_MBXxf/pub?gid=0&single=true&output=csv'; 
 
 async function fetchSchoolEvents() {
     try {
@@ -131,4 +131,5 @@ function createCardHTML(event) {
 }
 
 // Run on load
+
 document.addEventListener('DOMContentLoaded', fetchSchoolEvents);
