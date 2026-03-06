@@ -1,47 +1,58 @@
-// PASTE YOUR GOOGLE SHEET CSV LINK HERE
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT8AfAtB-eXyuOyoQZJ48kDLOJUiE3MbaxF8XGwN5K9gQD6biT5oNFymac8vVZnBf8N9bwFTj_MBXxf/pub?gid=0&single=true&output=csv'; 
+// 1. URL base (sin el ID de la hoja al final para poder elegir pestañas)
+const BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-skmtlp8jQxladB-ZebiaxZ9rBQhG6dhCRFplxuZow-YZtj5llFqyoMmeL4cUuPjR2xdaT0O_Woj/pub?output=csv'; 
 
-async function fetchSchoolEvents() {
+async function fetchData() {
     try {
-        const response = await fetch(SHEET_URL);
-        const data = await response.text();
-        const events = parseCSV(data);
+        // Cargamos ambas hojas usando el parámetro &gid o el nombre si fuera API, 
+        // pero con 'pub?output=csv' lo más seguro es usar el ID de la pestaña (gid).
+        // Si tu pestaña "Informacion" tiene otro gid, cámbialo aquí:
+        const EVENTS_URL = `${BASE_URL}&gid=2029076722`; // Tu gid actual
+        const INFO_URL = `${BASE_URL}&gid=1489000987`; // Reemplaza esto
+
+        const [resEvents, resInfo] = await Promise.all([
+            fetch(EVENTS_URL),
+            fetch(INFO_URL)
+        ]);
+
+        const dataEvents = await resEvents.text();
+        const dataInfo = await resInfo.text();
+
+        const events = parseCSV(dataEvents);
+        const infoItems = parseCSV(dataInfo);
+
         displayEvents(events);
-        //console.log(events);
+        displayGeneralInfo(infoItems);
+
     } catch (error) {
         console.error('Error fetching data:', error);
-        document.querySelector('main').innerHTML = '<p style="text-align:center; color:red;">Error loading events. Please try again later.</p>';
+        document.querySelector('main').innerHTML = '<p style="text-align:center; color:red;">Error al cargar los datos. Intente más tarde.</p>';
     }
 }
 
-// Helper: Parse CSV text into an Array of Objects
+// Helper: Parse CSV (Tu lógica actual mejorada)
 function parseCSV(csvText) {
     const rows = csvText.split('\n');
+    if (rows.length < 1) return [];
+    
     const headers = rows[0].split(',').map(header => header.trim());
-    const events = [];
+    const data = [];
 
     for (let i = 1; i < rows.length; i++) {
-        // Handle potential empty rows
         if (!rows[i].trim()) continue;
-
-        // Simple split by comma (Note: This breaks if your description contains commas. 
-        // Ideally, avoid commas in the sheet or use a robust CSV library)
         const values = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
         
-        let event = {};
+        let obj = {};
         headers.forEach((header, index) => {
-            // Clean up quotes if present
             let val = values[index] ? values[index].trim() : '';
             val = val.replace(/^"|"$/g, ''); 
-            event[header] = val;
+            obj[header] = val;
         });
-        events.push(event);
+        data.push(obj);
     }
-    return events;
+    return data;
 }
 
 function displayEvents(events) {
-    // Referencias a los contenedores
     const containers = {
         today: document.getElementById('today-events'),
         thisWeek: document.getElementById('this-week-events'),
@@ -50,18 +61,18 @@ function displayEvents(events) {
         past: document.getElementById('past-events')
     };
 
+    // Limpiar contenedores antes de llenar
+    Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // --- CÁLCULO DE RANGOS ---
-    
-    // Fin de esta semana (Próximo domingo)
+    // Cálculos de rangos
     const endOfThisWeek = new Date(today);
     const daysUntilSunday = 7 - (today.getDay() === 0 ? 7 : today.getDay());
     endOfThisWeek.setDate(today.getDate() + daysUntilSunday);
     endOfThisWeek.setHours(23, 59, 59, 999);
 
-    // Inicio y fin de la próxima semana
     const startOfNextWeek = new Date(endOfThisWeek);
     startOfNextWeek.setDate(endOfThisWeek.getDate() + 1);
     startOfNextWeek.setHours(0, 0, 0, 0);
@@ -70,15 +81,15 @@ function displayEvents(events) {
     endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
     endOfNextWeek.setHours(23, 59, 59, 999);
 
-    // 1. Procesar y ordenar
+    // Procesar (Asegúrate que en el Excel la columna se llame "Fecha")
     const processedEvents = events.map(event => {
-        const parts = event.Date.split('-');
+        if(!event.Fecha) return null;
+        const parts = event.Fecha.split('-');
         return { ...event, dateObj: new Date(parts[0], parts[1] - 1, parts[2]) };
-    }).sort((a, b) => a.dateObj - b.dateObj);
+    }).filter(e => e !== null).sort((a, b) => a.dateObj - b.dateObj);
 
     let hasToday = false;
 
-    // 2. Clasificar
     processedEvents.forEach(event => {
         const eTime = event.dateObj.getTime();
         const cardHTML = createCardHTML(event);
@@ -98,7 +109,6 @@ function displayEvents(events) {
         }
     });
 
-    // 3. Pasados (Límite 3)
     const pastEvents = processedEvents
         .filter(e => e.dateObj < today)
         .sort((a, b) => b.dateObj - a.dateObj)
@@ -108,28 +118,57 @@ function displayEvents(events) {
         containers.past.innerHTML += createCardHTML(event);
     });
 
-    document.getElementById('no-today').style.display = hasToday ? 'none' : 'block';
+    const noTodayMsg = document.getElementById('no-today');
+    if(noTodayMsg) noTodayMsg.style.display = hasToday ? 'none' : 'block';
 }
 
-// Función auxiliar para no repetir código de creación de tarjeta
 function createCardHTML(event) {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     let dateSpanish = event.dateObj.toLocaleDateString('es-ES', options);
     dateSpanish = dateSpanish.charAt(0).toUpperCase() + dateSpanish.slice(1);
-
-    // Capturamos la hora, si no hay nada en el Excel ponemos un texto vacío
-    const eventTime = event.Time ? ` | 🕒 ${event.Time}` : '';
+    const eventTime = event.Hora ? ` | 🕒 ${event.Hora}` : '';
 
     return `
         <div class="event-card">
             <div class="event-date">${dateSpanish}${eventTime}</div>
-            <h3 class="event-title">${event.Title}</h3>
-            <p class="event-desc">${event.Description}</p>
-            <div class="event-meta">📍 ${event.Location} | 🏷️ ${event.Type}</div>
+            <h3 class="event-title">${event.Titulo || 'Sin título'}</h3>
+            <p class="event-desc">${event.Descripcion || ''}</p>
+            <div class="event-meta">📍 ${event.Ubicacion || 'No especificada'} | 🏷️ ${event.Tipo || 'General'}</div>
         </div>
     `;
 }
 
-// Run on load
+// Nueva función para mostrar Información General
+function displayGeneralInfo(infoItems) {
+    const infoGrid = document.querySelector('.info-grid');
+    if(!infoGrid) return;
+    infoGrid.innerHTML = ''; 
 
-document.addEventListener('DOMContentLoaded', fetchSchoolEvents);
+    infoItems.forEach(item => {
+        infoGrid.innerHTML += `
+            <div class="info-card">
+                <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
+                <p>${item.Contenido || ''}</p>
+            </div>
+        `;
+    });
+}
+
+function openTab(evt, tabName) {
+    let i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tab-content");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+        tabcontent[i].classList.remove("active");
+    }
+    tablinks = document.getElementsByClassName("tab-link");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabName).style.display = "block";
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+// Al cargar, ejecutamos la petición
+document.addEventListener('DOMContentLoaded', fetchData);
