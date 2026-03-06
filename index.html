@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,59 +17,70 @@
     </header>
 
     <nav class="tab-navigation">
-    <div class="container">
-        <button class="tab-link active" onclick="openTab(event, 'eventos')">📅 Calendario de Eventos</button>
-        <button class="tab-link" onclick="openTab(event, 'informacion')">ℹ️ Información General</button>
-    </div>
-</nav>
+        <div class="container">
+            <button class="tab-link active" onclick="openTab(event, 'eventos')">📅 Calendario de Eventos</button>
+            <button class="tab-link" onclick="openTab(event, 'informacion')">ℹ️ Información General</button>
+            <button class="tab-link" onclick="openTab(event, 'horario')">🕒 Horario de Clases</button>
+        </div>
+    </nav>
 
-<main class="container">
-    <div id="eventos" class="tab-content active">
-    <section id="today-section">
-        <h2>🔔 Para Hoy</h2>
-        <div id="today-events" class="events-grid"></div>
-        <p id="no-today" class="empty-message" style="display:none;">No hay eventos para hoy.</p>
-    </section>
+    <main class="container">
+        <div id="eventos" class="tab-content active">
+            <section id="today-section">
+                <h2>🔔 Para Hoy</h2>
+                <div id="today-events" class="events-grid"></div>
+                <p id="no-today" class="empty-message" style="display:none;">No hay eventos para hoy.</p>
+            </section>
 
-    <section id="this-week-section">
-        <h2>🗓️ Esta semana</h2>
-        <div id="this-week-events" class="events-grid"></div>
-    </section>
+            <section id="this-week-section">
+                <h2>🗓️ Esta semana</h2>
+                <div id="this-week-events" class="events-grid"></div>
+            </section>
 
-    <section id="next-week-section">
-        <h2>⏭️ Próxima semana</h2>
-        <div id="next-week-events" class="events-grid"></div>
-    </section>
+            <section id="next-week-section">
+                <h2>⏭️ Próxima semana</h2>
+                <div id="next-week-events" class="events-grid"></div>
+            </section>
 
-    <section id="future-section">
-        <h2>📅 Actividades Futuras</h2>
-        <div id="future-events" class="events-grid"></div>
-    </section>
+            <section id="future-section">
+                <h2>📅 Actividades Futuras</h2>
+                <div id="future-events" class="events-grid"></div>
+            </section>
 
-    <hr>
+            <hr>
 
-    <section id="past-section">
-        <h2>📜 Actividades Anteriores</h2>
-        <div id="past-events" class="events-grid"></div>
-    </section>
-    </div>
+            <section id="past-section">
+                <h2>📜 Actividades Anteriores</h2>
+                <div id="past-events" class="events-grid"></div>
+            </section>
+        </div>
 
-<div id="informacion" class="tab-content">
-    <section class="info-general">
-        <!--<h2>ℹ️ Información para la Comunidad</h2>-->
-        <div class="info-grid">
-            </div>
-    </section>
-</div>
-</main>
+        <div id="informacion" class="tab-content">
+            <section class="info-general">
+                <div class="info-grid">
+                    </div>
+            </section>
+        </div>
 
-<footer class="main-footer">
-    <div class="footer-bottom">
-        <p>&copy; 2026 - Directiva del Curso</p>
-    </div>
-</footer>
+        <div id="horario" class="tab-content">
+            <section class="horario-container" style="text-align: center; background: white; padding: 20px; border-radius: 8px;">
+                <h2>🕒 Horario de Clases 2026</h2>
+                <div class="image-wrapper" style="margin: 20px 0;">
+                    <img src="horario1A_LAB.jpg" alt="Horario de Clases Primero Básico A" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                </div>
+                <div class="download-zone" style="margin-top: 20px;">
+                    <a href="horario1A_LAB.jpg" download class="btn-download" style="background-color: #3498db; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">📥 Descargar Horario</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-bottom">
+            <p>&copy; 2026 - Directiva del Curso</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
-
 </html>
