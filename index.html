@@ -16,7 +16,15 @@
         </div>
     </header>
 
+    <nav class="tab-navigation">
+    <div class="container">
+        <button class="tab-link active" onclick="openTab(event, 'eventos')">📅 Calendario de Eventos</button>
+        <button class="tab-link" onclick="openTab(event, 'informacion')">ℹ️ Información General</button>
+    </div>
+</nav>
+
 <main class="container">
+    <div id="eventos" class="tab-content active">
     <section id="today-section">
         <h2>🔔 Para Hoy</h2>
         <div id="today-events" class="events-grid"></div>
@@ -44,6 +52,15 @@
         <h2>📜 Actividades Anteriores</h2>
         <div id="past-events" class="events-grid"></div>
     </section>
+    </div>
+
+<div id="informacion" class="tab-content">
+    <section class="info-general">
+        <!--<h2>ℹ️ Información para la Comunidad</h2>-->
+        <div class="info-grid">
+            </div>
+    </section>
+</div>
 </main>
 
 <footer class="main-footer">
