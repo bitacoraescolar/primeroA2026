@@ -6,13 +6,18 @@ async function fetchData() {
         // Cargamos ambas hojas usando el parámetro &gid o el nombre si fuera API, 
         // pero con 'pub?output=csv' lo más seguro es usar el ID de la pestaña (gid).
         // Si tu pestaña "Informacion" tiene otro gid, cámbialo aquí:
-        const EVENTS_URL = `${BASE_URL}&gid=2029076722`; // Tu gid actual
-        const INFO_URL = `${BASE_URL}&gid=1489000987`; // Reemplaza esto
+
+        // Creamos un sello de tiempo único (ej: 1715234567)
+        const cacheBuster = new Date().getTime();
+
+        // Añadimos &cb= al final de la URL
+        const EVENTS_URL = `${BASE_URL}&gid=2029076722&cb=${cacheBuster}`;
+        const INFO_URL = `${BASE_URL}&gid=1489000987&cb=${cacheBuster}`;
 
         const [resEvents, resInfo] = await Promise.all([
             fetch(EVENTS_URL),
             fetch(INFO_URL)
-        ]);
+        ]);        
 
         const dataEvents = await resEvents.text();
         const dataInfo = await resInfo.text();
