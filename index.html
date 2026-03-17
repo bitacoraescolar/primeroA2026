@@ -18,9 +18,11 @@
 
     <nav class="tab-navigation">
         <div class="container">
-            <button class="tab-link active" onclick="openTab(event, 'eventos')">📅 Calendario de Eventos</button>
-            <button class="tab-link" onclick="openTab(event, 'informacion')">ℹ️ Información General</button>
-            <button class="tab-link" onclick="openTab(event, 'horario')">🕒 Horario de Clases</button>
+            <button class="tab-link active" onclick="openTab(event, 'eventos')">📅 Eventos</button>
+            <button class="tab-link" onclick="openTab(event, 'rutina')">📌 Rutina Semanal</button>            
+            <button class="tab-link" onclick="openTab(event, 'informacion')">ℹ️ Información Curso</button>
+            <button class="tab-link" onclick="openTab(event, 'informacionC')">ℹ️ Información Colegio</button>
+            <button class="tab-link" onclick="openTab(event, 'horario')">🕒 Horario</button>
         </div>
     </nav>
 
@@ -61,6 +63,21 @@
                     </div>
             </section>
         </div>
+
+        <div id="rutina" class="tab-content">
+            <section class="rutina-container">
+                <h2>📌 Rutina Semanal</h2>
+                <div id="rutina-grid" class="info-grid">
+                    </div>
+            </section>
+        </div>
+
+        <div id="informacionC" class="tab-content">
+            <section class="infoc-general">
+                <div class="infoc-grid">
+                    </div>
+            </section>
+        </div>        
 
         <div id="horario" class="tab-content">
             <section class="horario-container" style="text-align: center; background: white; padding: 20px; border-radius: 8px;">
