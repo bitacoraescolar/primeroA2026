@@ -3,30 +3,46 @@ const BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-skmtlp8jQx
 
 async function fetchData() {
     try {
-        // Cargamos ambas hojas usando el parámetro &gid o el nombre si fuera API, 
-        // pero con 'pub?output=csv' lo más seguro es usar el ID de la pestaña (gid).
-        // Si tu pestaña "Informacion" tiene otro gid, cámbialo aquí:
-
-        // Creamos un sello de tiempo único (ej: 1715234567)
+        // Creamos un sello de tiempo único para evitar la caché
         const cacheBuster = new Date().getTime();
 
-        // Añadimos &cb= al final de la URL
-        const EVENTS_URL = `${BASE_URL}&gid=2029076722&cb=${cacheBuster}`;
-        const INFO_URL = `${BASE_URL}&gid=1489000987&cb=${cacheBuster}`;
+        // GIDs de las pestañas
+        const GID_EVENTOS = '2029076722';
+        const GID_INFO = '1489000987';
+        const GID_RUTINA = '919577104';
+        const GID_INFOC = '837205501';
 
-        const [resEvents, resInfo] = await Promise.all([
+        // Construcción de URLs
+        const EVENTS_URL = `${BASE_URL}&gid=${GID_EVENTOS}&cb=${cacheBuster}`;
+        const INFO_URL = `${BASE_URL}&gid=${GID_INFO}&cb=${cacheBuster}`;
+        const RUTINA_URL = `${BASE_URL}&gid=${GID_RUTINA}&cb=${cacheBuster}`;
+        const INFOC_URL = `${BASE_URL}&gid=${GID_INFOC}&cb=${cacheBuster}`;
+
+        // Peticiones simultáneas
+        const [resEvents, resInfo, resRutina, resInfoc] = await Promise.all([
             fetch(EVENTS_URL),
-            fetch(INFO_URL)
+            fetch(INFO_URL),
+            fetch(RUTINA_URL),
+            fetch(INFOC_URL)
         ]);        
 
         const dataEvents = await resEvents.text();
         const dataInfo = await resInfo.text();
+        const dataRutina = await resRutina.text();
+        const dataInfoc = await resInfoc.text();
 
         const events = parseCSV(dataEvents);
         const infoItems = parseCSV(dataInfo);
+        const rutinaItems = parseCSV(dataRutina);
+        const InfocItems = parseCSV(dataInfoc);
 
+        console.log(InfocItems)
+
+        // Renderizar todas las secciones
         displayEvents(events);
         displayGeneralInfo(infoItems);
+        displayRutina(rutinaItems);
+        displayInfoc(InfocItems);
 
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -34,7 +50,7 @@ async function fetchData() {
     }
 }
 
-// Helper: Parse CSV (Tu lógica actual mejorada)
+// Helper: Parse CSV
 function parseCSV(csvText) {
     const rows = csvText.split('\n');
     if (rows.length < 1) return [];
@@ -66,13 +82,11 @@ function displayEvents(events) {
         past: document.getElementById('past-events')
     };
 
-    // Limpiar contenedores antes de llenar
     Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Cálculos de rangos
     const endOfThisWeek = new Date(today);
     const daysUntilSunday = 7 - (today.getDay() === 0 ? 7 : today.getDay());
     endOfThisWeek.setDate(today.getDate() + daysUntilSunday);
@@ -86,7 +100,6 @@ function displayEvents(events) {
     endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
     endOfNextWeek.setHours(23, 59, 59, 999);
 
-    // Procesar (Asegúrate que en el Excel la columna se llame "Fecha")
     const processedEvents = events.map(event => {
         if(!event.Fecha) return null;
         const parts = event.Fecha.split('-');
@@ -143,7 +156,6 @@ function createCardHTML(event) {
     `;
 }
 
-// Nueva función para mostrar Información General
 function displayGeneralInfo(infoItems) {
     const infoGrid = document.querySelector('.info-grid');
     if(!infoGrid) return;
@@ -154,6 +166,49 @@ function displayGeneralInfo(infoItems) {
             <div class="info-card">
                 <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
                 <p>${item.Contenido || ''}</p>
+            </div>
+        `;
+    });
+}
+
+function displayInfoc(infocItems) {
+    const infoCGrid = document.querySelector('.infoc-grid');    
+    if(!infoCGrid) return;
+    infoCGrid.innerHTML = ''; 
+
+    infocItems.forEach(item => {
+        // Si la fila no tiene icono ni contenido, la tratamos como un SEPARADOR
+        if (!item.Icono && !item.Contenido && item.Seccion) {
+            infoCGrid.innerHTML += `
+                <div class="grid-separator">
+                    <h3>${item.Seccion}</h3>
+                </div>
+            `;
+        } else {
+            // Tarjeta normal
+            infoCGrid.innerHTML += `
+                <div class="infoc-card">
+                    <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
+                    <p>${item.Contenido || ''}</p>
+                </div>
+            `;
+        }
+    });
+}
+
+// NUEVA FUNCIÓN: Mostrar Rutina Semanal
+function displayRutina(rutinaItems) {
+    const rutinaGrid = document.getElementById('rutina-grid');
+    if(!rutinaGrid) return;
+    rutinaGrid.innerHTML = ''; 
+
+    rutinaItems.forEach(item => {
+        // Usamos Dia, Actividad y Detalle como encabezados sugeridos
+        rutinaGrid.innerHTML += `
+            <div class="info-card" style="border-left: 5px solid #f39c12;">
+                <h3 style="color: #d35400;">${item.Dia || ''}</h3>
+                <p><strong>${item.Actividad || ''}</strong></p>
+                <p style="font-size: 0.9rem; color: #666;">${item.Detalle || ''}</p>
             </div>
         `;
     });
@@ -175,5 +230,4 @@ function openTab(evt, tabName) {
     evt.currentTarget.classList.add("active");
 }
 
-// Al cargar, ejecutamos la petición
 document.addEventListener('DOMContentLoaded', fetchData);
