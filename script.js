@@ -78,20 +78,27 @@ function displayEvents(events) {
         today: document.getElementById('today-events'),
         thisWeek: document.getElementById('this-week-events'),
         nextWeek: document.getElementById('next-week-events'),
+        thisMonth: document.getElementById('this-month-events'),
+        nextMonth: document.getElementById('next-month-events'),
         future: document.getElementById('future-events'),
         past: document.getElementById('past-events')
     };
 
+    // Limpiar todos los contenedores antes de llenar
     Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // --- CÁLCULO DE RANGOS TEMPORALES ---
+
+    // 1. Fin de esta semana (domingo a las 23:59)
     const endOfThisWeek = new Date(today);
     const daysUntilSunday = 7 - (today.getDay() === 0 ? 7 : today.getDay());
     endOfThisWeek.setDate(today.getDate() + daysUntilSunday);
     endOfThisWeek.setHours(23, 59, 59, 999);
 
+    // 2. Próxima semana (lunes a domingo)
     const startOfNextWeek = new Date(endOfThisWeek);
     startOfNextWeek.setDate(endOfThisWeek.getDate() + 1);
     startOfNextWeek.setHours(0, 0, 0, 0);
@@ -100,9 +107,18 @@ function displayEvents(events) {
     endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
     endOfNextWeek.setHours(23, 59, 59, 999);
 
+    // 3. Fin de este mes
+    const endOfThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    // 4. Rango del próximo mes
+    const startOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1, 0, 0, 0, 0);
+    const endOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0, 23, 59, 59, 999);
+
+    // --- PROCESAMIENTO DE DATOS ---
     const processedEvents = events.map(event => {
         if(!event.Fecha) return null;
         const parts = event.Fecha.split('-');
+        // Crear objeto de fecha asegurando que sea local
         return { ...event, dateObj: new Date(parts[0], parts[1] - 1, parts[2]) };
     }).filter(e => e !== null).sort((a, b) => a.dateObj - b.dateObj);
 
@@ -112,6 +128,7 @@ function displayEvents(events) {
         const eTime = event.dateObj.getTime();
         const cardHTML = createCardHTML(event);
 
+        // Clasificación por prioridad
         if (eTime === today.getTime()) {
             containers.today.innerHTML += cardHTML;
             hasToday = true;
@@ -122,20 +139,29 @@ function displayEvents(events) {
         else if (eTime >= startOfNextWeek.getTime() && eTime <= endOfNextWeek.getTime()) {
             containers.nextWeek.innerHTML += cardHTML;
         } 
-        else if (eTime > endOfNextWeek.getTime()) {
+        else if (eTime > endOfNextWeek.getTime() && eTime <= endOfThisMonth.getTime()) {
+            // Eventos que quedan de este mes después de la próxima semana
+            if(containers.thisMonth) containers.thisMonth.innerHTML += cardHTML;
+        }
+        else if (eTime >= startOfNextMonth.getTime() && eTime <= endOfNextMonth.getTime()) {
+            if(containers.nextMonth) containers.nextMonth.innerHTML += cardHTML;
+        }
+        else if (eTime > endOfNextMonth.getTime()) {
             containers.future.innerHTML += cardHTML;
         }
     });
 
+    // --- ACTIVIDADES ANTERIORES (Historial reciente) ---
     const pastEvents = processedEvents
         .filter(e => e.dateObj < today)
-        .sort((a, b) => b.dateObj - a.dateObj)
+        .sort((a, b) => b.dateObj - a.dateObj) // Orden inverso (más reciente primero)
         .slice(0, 3);
 
     pastEvents.forEach(event => {
-        containers.past.innerHTML += createCardHTML(event);
+        if(containers.past) containers.past.innerHTML += createCardHTML(event);
     });
 
+    // Control del mensaje "No hay eventos para hoy"
     const noTodayMsg = document.getElementById('no-today');
     if(noTodayMsg) noTodayMsg.style.display = hasToday ? 'none' : 'block';
 }
