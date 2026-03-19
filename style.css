@@ -258,3 +258,8 @@ h2 { color: #2c3e50; border-bottom: 3px solid #3498db; display: inline-block; ma
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
 }
+/* Este mes: Púrpura */
+#this-month-events .event-card { border-left-color: #9b59b6; background-color: #fcfaff; }
+
+/* Próximo mes: Teal */
+#next-month-events .event-card { border-left-color: #1abc9c; }
