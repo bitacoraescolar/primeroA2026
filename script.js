@@ -36,7 +36,7 @@ async function fetchData() {
         const rutinaItems = parseCSV(dataRutina);
         const InfocItems = parseCSV(dataInfoc);
 
-        console.log(InfocItems)
+        console.log(events)
 
         // Renderizar todas las secciones
         displayEvents(events);
@@ -84,6 +84,7 @@ function displayEvents(events) {
         past: document.getElementById('past-events')
     };
 
+    
     // Limpiar todos los contenedores antes de llenar
     Object.values(containers).forEach(c => { if(c) c.innerHTML = ''; });
 
@@ -184,17 +185,29 @@ function createCardHTML(event) {
 
 function displayGeneralInfo(infoItems) {
     const infoGrid = document.querySelector('.info-grid');
+    const noteText = document.getElementById('note-text');
+    const noteContainer = document.getElementById('floating-note');
+    
     if(!infoGrid) return;
-    infoGrid.innerHTML = ''; 
 
-    infoItems.forEach(item => {
-        infoGrid.innerHTML += `
-            <div class="info-card">
-                <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
-                <p>${item.Contenido || ''}</p>
-            </div>
-        `;
-    });
+    // --- CAMBIO AQUÍ: Usamos filter para obtener TODAS las urgentes ---
+    const avisosUrgentes = infoItems.filter(item => item.Seccion === 'AVISO');
+    
+    if (avisosUrgentes.length > 0 && noteText) {
+        // Unimos todas las noticias con un separador o un salto de línea <br>
+        noteText.innerHTML = avisosUrgentes.map(aviso => 
+            `<strong>${aviso.Seccion}:</strong> ${aviso.Contenido}`
+        ).join('<br><hr style="border:0; border-top:1px solid #ffcccc; margin:5px 0;">');
+        
+        noteContainer.style.display = 'block';
+    } else if (noteContainer) {
+        noteContainer.style.display = 'none';
+    }
+
+    // El resto de la función para las tarjetas normales se mantiene igual...
+    infoGrid.innerHTML = ''; 
+    const itemsParaTarjetas = infoItems.filter(item => item.Seccion !== 'AVISO');
+    // ... (forEach de tarjetas)
 }
 
 function displayInfoc(infocItems) {
@@ -257,3 +270,10 @@ function openTab(evt, tabName) {
 }
 
 document.addEventListener('DOMContentLoaded', fetchData);
+
+function closeNote() {
+    const note = document.getElementById('floating-note');
+    if (note) {
+        note.style.display = 'none';
+    }
+}
