@@ -263,3 +263,55 @@ h2 { color: #2c3e50; border-bottom: 3px solid #3498db; display: inline-block; ma
 
 /* Próximo mes: Teal */
 #next-month-events .event-card { border-left-color: #1abc9c; }
+
+/* Nota Flotante Color Rojo Claro */
+.floating-note {
+    background-color: #ffeded; /* Rojo muy claro */
+    border-bottom: 2px solid #ffcccc;
+    color: #c0392b; /* Texto rojo oscuro para contraste */
+    padding: 12px 0;
+    position: sticky;
+    top: 60px; /* Ajusta esto según la altura de tu nav sticky */
+    z-index: 99;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    animation: slideDown 0.5s ease;
+}
+
+.note-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    position: relative;
+}
+
+.note-icon {
+    font-size: 1.2rem;
+}
+
+.floating-note p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.close-note {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #c0392b;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    line-height: 1;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+}
+
+#note-text {
+    line-height: 1.4;
+    text-align: center; /* O left si prefieres */
+    width: 100%;
+}
