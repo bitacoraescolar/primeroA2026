@@ -171,14 +171,40 @@ function createCardHTML(event) {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     let dateSpanish = event.dateObj.toLocaleDateString('es-ES', options);
     dateSpanish = dateSpanish.charAt(0).toUpperCase() + dateSpanish.slice(1);
+    
     const eventTime = event.Hora ? ` | 🕒 ${event.Hora}` : '';
+    
+    // 1. LIMPIEZA DEL TÍTULO (Elimina iconos para WhatsApp)
+    const tituloSinIcono = (event.Titulo || 'EVENTO')
+        .replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '')
+        .trim()
+        .toUpperCase();
+
+    // 2. LIMPIEZA DE LA DESCRIPCIÓN (Elimina etiquetas HTML como <b>, <br>, etc)
+    // Usamos una expresión regular que busca cualquier cosa entre < > y la elimina
+    const descripcionLimpia = (event.Descripcion || '')
+        .replace(/<[^>]*>?/gm, '') 
+        .trim();
+
+    // --- LÓGICA DEL MENSAJE DE WHATSAPP ---
+    const textoWA = `*RECORDATORIO: ${tituloSinIcono}*\n\n` +
+                    `*Fecha:* ${dateSpanish}\n` +
+                    `*Hora:* ${event.Hora || 'No especificada'}\n` +
+                    `*Lugar:* ${event.Ubicacion || 'No especificada'}\n` +
+                    `*Detalle:* ${descripcionLimpia}`; // Usamos la descripción limpia aquí
+
+    const linkWhatsApp = `https://wa.me/?text=${encodeURIComponent(textoWA)}`;
 
     return `
         <div class="event-card">
             <div class="event-date">${dateSpanish}${eventTime}</div>
             <h3 class="event-title">${event.Titulo || 'Sin título'}</h3>
             <p class="event-desc">${event.Descripcion || ''}</p>
-            <div class="event-meta">📍 ${event.Ubicacion || 'No especificada'} | 🏷️ ${event.Tipo || 'General'}</div>
+            <div class="event-meta">📍 ${event.Ubicacion || 'No especificada'}</div>
+            
+            <a href="${linkWhatsApp}" target="_blank" class="btn-wa-circle" title="Compartir en WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
         </div>
     `;
 }
