@@ -315,3 +315,71 @@ h2 { color: #2c3e50; border-bottom: 3px solid #3498db; display: inline-block; ma
     text-align: center; /* O left si prefieres */
     width: 100%;
 }
+
+/* Botón de WhatsApp - Versión Discreta */
+.btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px; /* Menos espacio entre icono y texto */
+    background-color: #78a991; /* Verde opaco/apagado */
+    color: white;
+    padding: 4px 10px; /* Padding reducido (más pequeño) */
+    border-radius: 15px; /* Bordes menos redondeados */
+    text-decoration: none;
+    font-size: 0.75rem; /* Texto más pequeño */
+    font-weight: normal; /* Texto normal, no negrita */
+    transition: background 0.3s ease;
+    box-shadow: none; /* Quitamos la sombra para que se vea plano */
+}
+
+.btn-whatsapp:hover {
+    background-color: #5d8b76; /* Un tono más oscuro para el hover */
+    color: white;
+}
+
+/* Icono dentro del botón */
+.btn-whatsapp i {
+    font-size: 0.9rem; /* Icono más pequeño */
+}
+
+/* Alineación dentro de la tarjeta del evento */
+.event-card-actions {
+    margin-top: 10px;
+    text-align: right; /* Alineado a la derecha */
+}
+
+/* 1. Aseguramos que la tarjeta sea el marco de referencia */
+.event-card {
+    position: relative; /* Importante para que el botón se fije aquí */
+    padding-bottom: 50px; /* Espacio extra abajo para que el botón no tape el texto */
+    /* ... mantén tus otros estilos de tarjeta ... */
+}
+
+/* 2. Botón circular minimalista */
+.btn-wa-circle {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    width: 35px;
+    height: 35px;
+    background-color: #78a991; /* El verde opaco que elegiste */
+    color: white !important;
+    border-radius: 50%; /* Lo hace un círculo perfecto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-wa-circle:hover {
+    background-color: #5d8b76;
+    transform: scale(1.1); /* Efecto sutil al pasar el mouse */
+}
+
+/* Ajuste para iconos de Font Awesome */
+.btn-wa-circle i {
+    line-height: 0;
+}
