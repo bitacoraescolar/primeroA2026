@@ -230,10 +230,20 @@ function displayGeneralInfo(infoItems) {
         noteContainer.style.display = 'none';
     }
 
-    // El resto de la función para las tarjetas normales se mantiene igual...
+ // 2. Lógica para las tarjetas (Filtra para EXCLUIR el urgente)
     infoGrid.innerHTML = ''; 
+
+    // Usamos .filter() para crear una lista que no tenga 'URGENTE'
     const itemsParaTarjetas = infoItems.filter(item => item.Seccion !== 'AVISO');
-    // ... (forEach de tarjetas)
+
+    itemsParaTarjetas.forEach(item => {
+        infoGrid.innerHTML += `
+            <div class="info-card">
+                <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
+                <p>${item.Contenido || ''}</p>
+            </div>
+        `;
+    });
 }
 
 function displayInfoc(infocItems) {
