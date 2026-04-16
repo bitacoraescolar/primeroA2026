@@ -11,38 +11,44 @@ async function fetchData() {
         const GID_INFO = '1489000987';
         const GID_RUTINA = '919577104';
         const GID_INFOC = '837205501';
+        const GID_MATERIAL = '933095076'; // Reemplaza con el GID real de la hoja materialEscolar
 
         // Construcción de URLs
         const EVENTS_URL = `${BASE_URL}&gid=${GID_EVENTOS}&cb=${cacheBuster}`;
         const INFO_URL = `${BASE_URL}&gid=${GID_INFO}&cb=${cacheBuster}`;
         const RUTINA_URL = `${BASE_URL}&gid=${GID_RUTINA}&cb=${cacheBuster}`;
         const INFOC_URL = `${BASE_URL}&gid=${GID_INFOC}&cb=${cacheBuster}`;
+        const MATERIAL_URL = `${BASE_URL}&gid=${GID_MATERIAL}&cb=${cacheBuster}`;
 
         // Peticiones simultáneas
-        const [resEvents, resInfo, resRutina, resInfoc] = await Promise.all([
+        const [resEvents, resInfo, resRutina, resInfoc, resMaterial] = await Promise.all([
             fetch(EVENTS_URL),
             fetch(INFO_URL),
             fetch(RUTINA_URL),
-            fetch(INFOC_URL)
+            fetch(INFOC_URL),
+            fetch(MATERIAL_URL)
         ]);        
 
         const dataEvents = await resEvents.text();
         const dataInfo = await resInfo.text();
         const dataRutina = await resRutina.text();
         const dataInfoc = await resInfoc.text();
+        const dataMaterial = await resMaterial.text();
 
         const events = parseCSV(dataEvents);
         const infoItems = parseCSV(dataInfo);
         const rutinaItems = parseCSV(dataRutina);
         const InfocItems = parseCSV(dataInfoc);
+        const materialItems = parseCSV(dataMaterial);
 
-        console.log(events)
+        //console.log(infoItems)
 
         // Renderizar todas las secciones
         displayEvents(events);
         displayGeneralInfo(infoItems);
         displayRutina(rutinaItems);
         displayInfoc(InfocItems);
+        displayMaterial(materialItems);
 
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -181,7 +187,6 @@ function createCardHTML(event) {
         .toUpperCase();
 
     // 2. LIMPIEZA DE LA DESCRIPCIÓN (Elimina etiquetas HTML como <b>, <br>, etc)
-    // Usamos una expresión regular que busca cualquier cosa entre < > y la elimina
     const descripcionLimpia = (event.Descripcion || '')
         .replace(/<[^>]*>?/gm, '') 
         .trim();
@@ -191,8 +196,7 @@ function createCardHTML(event) {
                     `*Fecha:* ${dateSpanish}\n` +
                     `*Hora:* ${event.Hora || 'No especificada'}\n` +
                     `*Lugar:* ${event.Ubicacion || 'No especificada'}\n` +
-                    `*Detalle:* ${descripcionLimpia}`; // Usamos la descripción limpia aquí
-
+                    `*Detalle:* ${descripcionLimpia}`; 
     const linkWhatsApp = `https://wa.me/?text=${encodeURIComponent(textoWA)}`;
 
     return `
@@ -201,6 +205,7 @@ function createCardHTML(event) {
             <h3 class="event-title">${event.Titulo || 'Sin título'}</h3>
             <p class="event-desc">${event.Descripcion || ''}</p>
             <div class="event-meta">📍 ${event.Ubicacion || 'No especificada'}</div>
+            <div class="event-tipo">🏷️${event.Tipo || 'No especificada'}</div>
             
             <a href="${linkWhatsApp}" target="_blank" class="btn-wa-circle" title="Compartir en WhatsApp">
                 <i class="fab fa-whatsapp"></i>
@@ -252,7 +257,6 @@ function displayInfoc(infocItems) {
     infoCGrid.innerHTML = ''; 
 
     infocItems.forEach(item => {
-        // Si la fila no tiene icono ni contenido, la tratamos como un SEPARADOR
         if (!item.Icono && !item.Contenido && item.Seccion) {
             infoCGrid.innerHTML += `
                 <div class="grid-separator">
@@ -260,7 +264,6 @@ function displayInfoc(infocItems) {
                 </div>
             `;
         } else {
-            // Tarjeta normal
             infoCGrid.innerHTML += `
                 <div class="infoc-card">
                     <h3>${item.Icono || 'ℹ️'} ${item.Seccion || 'Aviso'}</h3>
@@ -271,19 +274,47 @@ function displayInfoc(infocItems) {
     });
 }
 
-// NUEVA FUNCIÓN: Mostrar Rutina Semanal
 function displayRutina(rutinaItems) {
     const rutinaGrid = document.getElementById('rutina-grid');
     if(!rutinaGrid) return;
     rutinaGrid.innerHTML = ''; 
 
     rutinaItems.forEach(item => {
-        // Usamos Dia, Actividad y Detalle como encabezados sugeridos
         rutinaGrid.innerHTML += `
             <div class="info-card" style="border-left: 5px solid #f39c12;">
                 <h3 style="color: #d35400;">${item.Dia || ''}</h3>
                 <p><strong>${item.Actividad || ''}</strong></p>
                 <p style="font-size: 0.9rem; color: #666;">${item.Detalle || ''}</p>
+            </div>
+        `;
+    });
+}
+
+// NUEVA FUNCIÓN: Mostrar Material Escolar
+function displayMaterial(materialItems) {
+    const materialGrid = document.getElementById('lista-material');
+    if(!materialGrid) return;
+    materialGrid.innerHTML = '';
+
+    // Filtrar los que tienen 'activo' en 1 (o "1")
+    const materialesActivos = materialItems.filter(item => item.ACTIVO == '1');
+
+    //console.log(materialesActivos)
+
+    if (materialesActivos.length === 0) {
+        materialGrid.innerHTML = '<p class="empty-message">No hay material cargado actualmente.</p>';
+        return;
+    }
+
+    materialesActivos.forEach(item => {
+        materialGrid.innerHTML += `
+            <div class="info-card" style="border-left: 5px solid #e74c3c;">
+                <h3 style="color: #c0392b;"><i class="fas fa-file-pdf"></i> ${item.TITULO || 'Material'}</h3>
+                <div style="margin-top: 10px;">
+                    <a href="${item.URL}" target="_blank" class="btn-download" style="background-color: #e74c3c; color: white; padding: 5px 15px; text-decoration: none; border-radius: 4px; font-size: 0.85rem; display: inline-block;">
+                        <i class="fas fa-download"></i> Descargar PDF
+                    </a>
+                </div>
             </div>
         `;
     });
