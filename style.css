@@ -52,6 +52,15 @@ h2 { color: #2c3e50; border-bottom: 3px solid #3498db; display: inline-block; ma
 .event-title { font-size: 1.25rem; margin-bottom: 10px; color: #2c3e50; }
 .event-desc { margin-bottom: 15px; font-size: 0.95rem; }
 .event-meta { font-size: 0.85rem; color: #555; background: #eee; padding: 5px 10px; border-radius: 4px; display: inline-block;}
+.event-tipo {
+    font-size: 0.85rem;
+    color: #555;       /* Color verde oscuro para el texto */
+    background: #eee;  /* Fondo verde muy claro */
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-left: 8px;     /* Espacio respecto a la ubicación */
+}
 
 /* Specific Styles for Ongoing Events */
 #ongoing-events .event-card {
